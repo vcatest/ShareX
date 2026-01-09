@@ -1,12 +1,10 @@
 name: .NET
-
 on:
   push:
     branches: [ "develop" ]
   pull_request:
     branches: [ "develop" ]
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,6 +17,7 @@ jobs:
         apt-get update
         apt-get install curl wget libssl1.1 -y 
     
+    # NEW STEP: Install Java (OpenJDK 11 is a common, stable version)
     - name: Install Java for Embold Scanner
       run: |
         apt-get install openjdk-11-jre -y
@@ -26,18 +25,8 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        # UPDATED: Changed from 8.0.x to 9.0.x to match the project requirements
-        dotnet-version: 9.0.x 
+        dotnet-version: 3.0.x
         
-    - name: Build ShareX (Linux compatibility mode)
-      run: |
-        echo "Restoring dependencies..."
-        # We use '|| true' to ignore platform errors (Windows targets on Linux)
-        dotnet restore ShareX.sln || true
-        
-        echo "Building solution..."
-        dotnet build ShareX.sln --configuration Release || echo "Build incomplete due to platform mismatch, proceeding to analysis..."
-
     - name: Embold Analyse
       run: |
         curl  ${{ vars.EMBOLD_SCANNER_URL}} -o browserstack-codequality-scanner-archive.tar.gz

@@ -1,4 +1,4 @@
-name: .NET
+name: sonarQube
 on:
   push:
     branches: [ "develop" ]

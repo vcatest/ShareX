@@ -42,11 +42,15 @@ jobs:
     - name: SonarScanner Begin
       run: dotnet sonarscanner begin /k:"vcatest_ShareX" /o:"vcatest" /d:sonar.token="96776fa54a595ed6a86cfb00e41cf351b5af5c0e" /d:sonar.host.url="https://sonarcloud.io/"
 
-    ## NEW FIX: Patch the file path casing
-    - name: Fix Case Sensitivity in Resx
-      run: sed -i 's/resources\\/Resources\\/g' ShareX.UploadersLib/Properties/Resources.resx
-    ## FIX 2: Removed PostBuildEvent override as the Mock handles it now.
-    ## Note: If the ResX error persists, you MUST rename the files in your repo to match the .resx casing.
+    ## FIX 2: Patch file path casing (Folder AND File)
+    - name: Fix Case Sensitivity (Resx and Files)
+      run: |
+        # 1. Fix Directory Path in .resx: Change 'resources\' to 'Resources\'
+        sed -i 's/resources\\/Resources\\/g' ShareX.UploadersLib/Properties/Resources.resx
+        
+        # 2. Fix File Casing: Find "OAuthCallbackPage.html" (any case) and rename to lowercase
+        find ShareX.UploadersLib/Resources -depth -iname "oauthcallbackpage.html" -exec mv {} ShareX.UploadersLib/Resources/oauthcallbackpage.html \;
+        
     - name: Build Project
       run: dotnet build -p:EnableWindowsTargeting=true
       

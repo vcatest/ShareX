@@ -51,6 +51,19 @@ jobs:
         # 2. Fix File Casing: Find "OAuthCallbackPage.html" (any case) and rename to lowercase
         find ShareX.UploadersLib/Resources -depth -iname "oauthcallbackpage.html" -exec mv {} ShareX.UploadersLib/Resources/oauthcallbackpage.html \;
         
+        # 3. Fix Favicons Casing: Rename the 'Favicons' directory and ALL its files to lowercase
+        if [ -d "ShareX.UploadersLib/Favicons" ]; then mv ShareX.UploadersLib/Favicons ShareX.UploadersLib/favicons; fi
+        if [ -d "ShareX.UploadersLib/favicons" ]; then
+          find ShareX.UploadersLib/favicons -depth -type f | while read f; do 
+            dir=$(dirname "$f")
+            base=$(basename "$f")
+            lower=$(echo "$base" | tr '[:upper:]' '[:lower:]')
+            if [ "$base" != "$lower" ]; then
+              mv "$f" "$dir/$lower"
+            fi
+          done
+        fi
+        
     - name: Build Project
       run: dotnet build -p:EnableWindowsTargeting=true
       
